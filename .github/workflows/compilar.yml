@@ -10,7 +10,7 @@ on:
       - '.github/workflows/compilar.yml'
 
 jobs:
-  preparar:
+  compilar:
     runs-on: ubuntu-latest
     steps:
       - name: Baixar arquivos
@@ -22,19 +22,25 @@ jobs:
           distribution: temurin
           java-version: '8'
 
-      - name: Verificar arquivos do jogo
+      - name: Preparar ferramentas Java ME
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip wget
+          mkdir -p ferramentas classes
+          wget -O ferramentas/wtk.zip https://github.com/nikita36078/J2ME-Loader/releases/download/1.7.9/WTK.zip
+          unzip -oq ferramentas/wtk.zip -d ferramentas
+          find ferramentas -type f | head -80
+
+      - name: Verificar código
         run: |
           test -f DezClansMIDlet.java
           test -f MANIFEST.MF
-          echo "Arquivos do jogo encontrados!"
-          mkdir -p projeto
-          cp DezClansMIDlet.java MANIFEST.MF projeto/
-          cp -r src projeto/ 2>/dev/null || true
-          find projeto -type f
+          echo "Código e manifesto encontrados."
 
-      - name: Guardar arquivos
+      - name: Guardar diagnóstico
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: arquivos-do-jogo
-          path: projeto/
-          if-no-files-found: error
+          name: diagnostico-compilacao
+          path: ferramentas/
+          if-no-files-found: warn
