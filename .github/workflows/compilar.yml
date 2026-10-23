@@ -21,11 +21,20 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      
       - name: Extrair projeto
         run: |
           mkdir projeto
-          unzip -q Os_Dez_Clas_Elementares_compilacao_nuvem.zip -d projeto
+          ZIP_FILE="$(find . -maxdepth 4 -type f -iname '*.zip' -print -quit)"
+          if [ -z "$ZIP_FILE" ]; then
+            echo "Nenhum arquivo ZIP encontrado no repositório."
+            find . -maxdepth 4 -type f
+            exit 1
+          fi
+          echo "Arquivo encontrado: $ZIP_FILE"
+          unzip -q "$ZIP_FILE" -d projeto
           find projeto -type f
+
 
       - name: Verificar código do jogo
         run: |
