@@ -22,14 +22,16 @@ jobs:
           distribution: temurin
           java-version: '8'
 
-      - name: Preparar ferramentas Java ME
+      
+      - name: Verificar ferramentas disponíveis
         run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip wget
-          mkdir -p ferramentas classes
-          wget -O ferramentas/wtk.zip https://github.com/nikita36078/J2ME-Loader/releases/download/1.7.9/WTK.zip
-          unzip -oq ferramentas/wtk.zip -d ferramentas
-          find ferramentas -type f | head -80
+          echo "Java instalado:"
+          java -version
+          echo "Compilador Java:"
+          javac -version
+          echo "Arquivos do projeto:"
+          ls -la
+
 
       - name: Verificar código
         run: |
