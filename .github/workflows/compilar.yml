@@ -22,27 +22,22 @@ jobs:
           distribution: temurin
           java-version: '8'
 
-      
-      - name: Verificar ferramentas disponíveis
-        run: |
-          echo "Java instalado:"
-          java -version
-          echo "Compilador Java:"
-          javac -version
-          echo "Arquivos do projeto:"
-          ls -la
-
-
       - name: Verificar código
         run: |
           test -f DezClansMIDlet.java
           test -f MANIFEST.MF
-          echo "Código e manifesto encontrados."
+          echo "Arquivos encontrados"
 
-      - name: Guardar diagnóstico
+      - name: Preparar compilador Java ME
+        run: |
+          mkdir -p ferramentas
+          git clone --depth 1 https://github.com/nikita36078/J2ME-Loader.git ferramentas/J2ME-Loader
+          find ferramentas/J2ME-Loader -type f | head -80
+
+      - name: Guardar ferramentas para análise
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: diagnostico-compilacao
+          name: ferramentas-java-me
           path: ferramentas/
           if-no-files-found: warn
