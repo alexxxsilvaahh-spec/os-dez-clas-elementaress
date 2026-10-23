@@ -1,0 +1,40 @@
+
+name: Compilar Os Dez Clas Elementares
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Os_Dez_Clas_Elementares_compilacao_nuvem.zip'
+      - '.github/workflows/compilar.yml'
+
+jobs:
+  preparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar arquivos
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Extrair projeto
+        run: |
+          mkdir projeto
+          unzip -q Os_Dez_Clas_Elementares_compilacao_nuvem.zip -d projeto
+          find projeto -type f
+
+      - name: Verificar código do jogo
+        run: |
+          test -n "$(find projeto -name DezClansMIDlet.java -print -quit)"
+          echo "Código-fonte encontrado!"
+
+      - name: Guardar arquivos extraídos
+        uses: actions/upload-artifact@v4
+        with:
+          name: arquivos-do-jogo
+          path: projeto/
+          if-no-files-found: error
