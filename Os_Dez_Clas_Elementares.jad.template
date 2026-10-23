@@ -1,0 +1,8 @@
+MIDlet-Name: Os Dez Clas Elementares
+MIDlet-Version: 1.0.0
+MIDlet-Vendor: Projeto Independente
+MIDlet-1: Os Dez Clas Elementares,,com.claselementares.DezClansMIDlet
+MIDlet-Jar-URL: Os_Dez_Clas_Elementares.jar
+MIDlet-Jar-Size: 0
+MicroEdition-Profile: MIDP-2.0
+MicroEdition-Configuration: CLDC-1.1
