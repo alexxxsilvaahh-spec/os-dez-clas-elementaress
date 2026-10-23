@@ -1,43 +1,55 @@
-
 name: Compilar Os Dez Clas Elementares
 
 on:
-  workflow_dispatch:
-  push:
-    paths:
-      - 'DezClansMIDlet.java'
-      - 'MANIFEST.MF'
-      - '.github/workflows/compilar.yml'
+workflow_dispatch:
+push:
+paths:
+- 'DezClansMIDlet.java'
+- 'MANIFEST.MF'
+- '.github/workflows/compilar.yml'
 
 jobs:
-  compilar:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Baixar arquivos
-        uses: actions/checkout@v4
+compilar:
+runs-on: ubuntu-latest
+steps:
+- name: Baixar codigo do jogo
+uses: actions/checkout@v4
 
-      - name: Configurar Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '8'
+  - name: Configurar Java
+    uses: actions/setup-java@v4
+    with:
+      distribution: temurin
+      java-version: '17'
 
-      - name: Verificar código
-        run: |
-          test -f DezClansMIDlet.java
-          test -f MANIFEST.MF
-          echo "Arquivos encontrados"
+  - name: Baixar ferramentas Java ME
+    run: |
+      git clone --depth 1 https://github.com/retro-systems-lab/j2me-devkit.git ferramentas-j2me
+      cd ferramentas-j2me
+      mkdir -p src
+      cp ../DezClansMIDlet.java src/DezClansMIDlet.java
+      cat > app.jad <<'JAD'
+      MIDlet-Name: Os Dez Clas Elementares
+      MIDlet-Version: 1.0.0
+      MIDlet-Vendor: Projeto Independente
+      MIDlet-1: Os Dez Clas Elementares,,com.claselementares.DezClansMIDlet
+      MicroEdition-Configuration: CLDC-1.1
+      MicroEdition-Profile: MIDP-2.0
+      MIDlet-Jar-URL: app.jar
+      JAD
+      make setup
 
-      - name: Preparar compilador Java ME
-        run: |
-          mkdir -p ferramentas
-          git clone --depth 1 https://github.com/nikita36078/J2ME-Loader.git ferramentas/J2ME-Loader
-          find ferramentas/J2ME-Loader -type f | head -80
+  - name: Compilar e empacotar o jogo
+    run: |
+      cd ferramentas-j2me
+      make build
+      mkdir -p ../jogo-pronto
+      cp dist/app.jar ../jogo-pronto/Os-Dez-Clas-Elementares.jar
+      jar tf dist/app.jar | grep 'com/claselementares/DezClansMIDlet.class'
+      echo "Arquivo JAR gerado e classe principal verificada."
 
-      - name: Guardar ferramentas para análise
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ferramentas-java-me
-          path: ferramentas/
-          if-no-files-found: warn
+  - name: Disponibilizar o jogo
+    uses: actions/upload-artifact@v4
+    with:
+      name: Os-Dez-Clas-Elementares
+      path: jogo-pronto/Os-Dez-Clas-Elementares.jar
+      if-no-files-found: error
