@@ -1,0 +1,40 @@
+
+name: Compilar Os Dez Clas Elementares
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'DezClansMIDlet.java'
+      - 'MANIFEST.MF'
+      - '.github/workflows/compilar.yml'
+
+jobs:
+  preparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar arquivos
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+
+      - name: Verificar arquivos do jogo
+        run: |
+          test -f DezClansMIDlet.java
+          test -f MANIFEST.MF
+          echo "Arquivos do jogo encontrados!"
+          mkdir -p projeto
+          cp DezClansMIDlet.java MANIFEST.MF projeto/
+          cp -r src projeto/ 2>/dev/null || true
+          find projeto -type f
+
+      - name: Guardar arquivos
+        uses: actions/upload-artifact@v4
+        with:
+          name: arquivos-do-jogo
+          path: projeto/
+          if-no-files-found: error
