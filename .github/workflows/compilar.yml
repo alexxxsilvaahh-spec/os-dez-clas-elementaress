@@ -42,14 +42,16 @@ uses: actions/checkout@v4
     run: |
       cd ferramentas-j2me
       make build
+      jar umf ../MANIFEST.MF dist/app.jar
       mkdir -p ../jogo-pronto
-      cp dist/app.jar ../jogo-pronto/Os-Dez-Clas-Elementares.jar
-      jar tf dist/app.jar | grep 'com/claselementares/DezClansMIDlet.class'
-      echo "Arquivo JAR gerado e classe principal verificada."
+      cp dist/app.jar ../jogo-pronto/app.jar
+      cp app.jad ../jogo-pronto/app.jad
+      jar tf dist/app.jar | grep -Fx 'com/claselementares/DezClansMIDlet.class'
+      echo "JAR compilado e classe principal verificada."
 
   - name: Disponibilizar o jogo
     uses: actions/upload-artifact@v4
     with:
       name: Os-Dez-Clas-Elementares
-      path: jogo-pronto/Os-Dez-Clas-Elementares.jar
+      path: jogo-pronto/
       if-no-files-found: error
