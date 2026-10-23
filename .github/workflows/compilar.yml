@@ -5,7 +5,8 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'Os_Dez_Clas_Elementares_compilacao_nuvem.zip'
+      - 'DezClansMIDlet.java'
+      - 'MANIFEST.MF'
       - '.github/workflows/compilar.yml'
 
 jobs:
@@ -19,29 +20,19 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '8'
 
-      
-      - name: Extrair projeto
+      - name: Verificar arquivos do jogo
         run: |
-          mkdir projeto
-          ZIP_FILE="$(find . -maxdepth 4 -type f -iname '*.zip' -print -quit)"
-          if [ -z "$ZIP_FILE" ]; then
-            echo "Nenhum arquivo ZIP encontrado no repositório."
-            find . -maxdepth 4 -type f
-            exit 1
-          fi
-          echo "Arquivo encontrado: $ZIP_FILE"
-          unzip -q "$ZIP_FILE" -d projeto
+          test -f DezClansMIDlet.java
+          test -f MANIFEST.MF
+          echo "Arquivos do jogo encontrados!"
+          mkdir -p projeto
+          cp DezClansMIDlet.java MANIFEST.MF projeto/
+          cp -r src projeto/ 2>/dev/null || true
           find projeto -type f
 
-
-      - name: Verificar código do jogo
-        run: |
-          test -n "$(find projeto -name DezClansMIDlet.java -print -quit)"
-          echo "Código-fonte encontrado!"
-
-      - name: Guardar arquivos extraídos
+      - name: Guardar arquivos
         uses: actions/upload-artifact@v4
         with:
           name: arquivos-do-jogo
